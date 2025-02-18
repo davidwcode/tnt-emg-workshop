@@ -1,7 +1,7 @@
 import os
 import sys
 
-dll_path = os.path.join(os.path.dirname(__file__), "src")
+dll_path = os.path.join(os.path.dirname(__file__), "python")
 os.environ["PATH"] += os.pathsep + dll_path
 sys.path.append(dll_path)
 
@@ -11,9 +11,9 @@ from pylsl import StreamInlet, resolve_stream
 import numpy as np
 
 # inlet
-streams = resolve_stream('type', 'EEG')
+streams = resolve_stream('type', 'EMG')
 for stream in streams:
-    if stream.name() == "armEMG":
+    if stream.name() == "EMG":
         inlet = StreamInlet(stream)
         break
 

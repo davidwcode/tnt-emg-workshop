@@ -61,7 +61,7 @@ float calibrate(const char *type) {
 
 	clearSerialBuffer();
 
-	for (int i = 0; i < numSamples; i++) {
+	for (int i = 0; i < num_samples; i++) {
 		while (Serial.available() == 0) {
 			// wait for fresh input
 		}
@@ -70,13 +70,13 @@ float calibrate(const char *type) {
 			// skip first value to clear buffer
 			continue;
 		}
-		vals += cur * cur;
+		vals += abs(cur);
 		Serial.print(i);
 		Serial.print(" ");
 		Serial.println(vals);
 	}
 
-	return vals / numSamples - 1;
+	return vals / num_samples - 1;
 }
 
 void loop() {
@@ -92,7 +92,7 @@ void loop() {
 		Serial.print("Flex Average: ");
 		Serial.println(flexAvg);
 
-		threshold = restAvg + 0.4 * (flexAvg - restAvg);
+		threshold = restAvg + 0.1 * (flexAvg - restAvg);
 		Serial.print("Threshold: ");
 		Serial.println(threshold);
 
@@ -105,16 +105,16 @@ void loop() {
 	clearSerialBuffer();
 
 	float volt = Serial.readStringUntil('\n').toFloat();
-	volt *= volt;
+	volt = abs(volt);
 
 	
-	if (volt < threshold && count_relax >= 10 && current_time - start_time >= delta) {
+	if (volt < threshold && count_relax >= 20 && current_time - start_time >= delta) {
 		start_time = millis();
 
 		Serial.print("Relaxing: ");
 		Serial.print(threshold);
 		Serial.print(" > ");
-		Serial.println(curVolt);
+		Serial.println(volt);
 
 		angle += 10;
 
@@ -131,9 +131,9 @@ void loop() {
 		Serial.print("Flexing ");
 		Serial.print(threshold);
 		Serial.print(" < ");
-		Serial.print(curVolt);
+		Serial.print(volt);
 		Serial.print(" ");
-		Serial.println(curVolt < threshold);
+		Serial.println(volt < threshold);
 
 		angle -= 10;
 		angle = max(angle, 0);
